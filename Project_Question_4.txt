@@ -1,0 +1,19 @@
+/*Query that returns the store ID, the year and month and the number of rental orders each store has fulfilled for that month.*/ 
+SELECT	rental_month,
+	rental_year,
+        store_id,
+        COUNT(rental_id) count_rentals
+FROM
+	(SELECT EXTRACT (MONTH from DATE_TRUNC('month',rental_date)) rental_month,
+	EXTRACT (YEAR from DATE_TRUNC('month',rental_date)) rental_year,
+	s.store_id,
+	r.rental_id                                   
+	FROM staff st
+	JOIN store s
+	ON st.store_id = s.store_id
+	JOIN payment p
+	ON p.staff_id = st.staff_id
+	JOIN rental r
+	ON p.rental_id = r.rental_id)t1
+GROUP BY 1,2,3
+ORDER BY 4 DESC
